@@ -13,10 +13,11 @@ Questo repository contiene script di esempio per quanto riguarda modelli di Mach
 - `BoxJenkins.csv` — dataset di esempio incluso (lo script usa per default la seconda colonna).
 - `M3C_monthly.CSV` — altro dataset incluso (opzionale).
 - `RandomForest.py` — script per addestrare un modello di Random Forest, usando il dataset `M3C_monthly.CSV`.
+- `transformerAirlines.py` — script per addestrare un modello Transformer su un dataset di passeggeri aerei.
 
 Requisiti
 - Python 3.8+ (consigliato 3.9/3.10)
-- Pacchetti Python elencati in `requirements.txt`.
+- Librerie Python: `numpy`, `pandas`, `matplotlib`, `scikit-learn`, `xgboost`, `torch`, `seaborn` (per il Transformer)
 
 Installazione rapida
 1. Crea e attiva un virtualenv (consigliato):
@@ -29,7 +30,7 @@ python -m venv .venv
 
 
 Uso
-1. Posizionati nella cartella del progetto (dove si trova `XGBoost.py` o `RandomForest.py`).
+1. Posizionati nella cartella del progetto (dove si trova `XGBoost.py`, `RandomForest.py` o `transformerAirlines.py`).
 
 2. Esegui lo script con il dataset di default:
 
