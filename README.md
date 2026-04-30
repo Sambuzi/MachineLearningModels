@@ -14,10 +14,12 @@ Questo repository contiene script di esempio per quanto riguarda modelli di Mach
 - `M3C_monthly.CSV` — altro dataset incluso (opzionale).
 - `RandomForest.py` — script per addestrare un modello di Random Forest, usando il dataset `M3C_monthly.CSV`.
 - `transformerAirlines.py` — script per addestrare un modello Transformer su un dataset di passeggeri aerei.
+- `XGBoostOptuna.py` — script per ottimizzare gli iperparametri di XGBoost usando Optuna.
+
 
 Requisiti
 - Python 3.8+ (consigliato 3.9/3.10)
-- Librerie Python: `numpy`, `pandas`, `matplotlib`, `scikit-learn`, `xgboost`, `torch`, `seaborn` (per il Transformer)
+- Librerie Python: `numpy`, `pandas`, `matplotlib`, `scikit-learn`, `xgboost`, `torch`, `seaborn`, `optuna`.
 
 Installazione rapida
 1. Crea e attiva un virtualenv (consigliato):

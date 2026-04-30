@@ -1,3 +1,4 @@
+import optuna
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -6,6 +7,7 @@ from sklearn.feature_selection import RFE
 from sklearn.metrics import mean_absolute_error
 from sklearn.tree import plot_tree
 from XGBoost import create_dataset
+from sklearn.model_selection import cross_val_score
 
 #We use the same create_dataset function as in XGBoost.py to create the lagged features and target variable for our time series data. 
 #The main function reads the data, prepares the training and testing sets, fits the Random Forest model, makes rolling predictions, evaluates the model using MAE, and visualizes the results. Additionally, it computes and prints statistics about the trees in the random forest and plots the first tree for visualization.
@@ -31,11 +33,34 @@ def main(csv_path='M3C_monthly.CSV', lookback=12, nfore=12):
 	y_train = y[:-nfore]
 	y_test = y[-nfore:]
 
-	# define and fit the model
-	RFmodel = RandomForestRegressor(n_estimators=500, random_state=1)
+	# Optuna tuning: evaluate candidates with 3-fold CV on the training set
+	def objective(trial):
+		params = {
+			"n_estimators": trial.suggest_int("n_estimators", 50, 1000),
+			"max_depth": trial.suggest_int("max_depth", 2, 30),
+			"max_features": trial.suggest_categorical("max_features", ["sqrt", "log2", None, 0.2, 0.5, 0.8]),
+			"min_samples_split": trial.suggest_int("min_samples_split", 2, 10),
+			"min_samples_leaf": trial.suggest_int("min_samples_leaf", 1, 4),
+			"bootstrap": trial.suggest_categorical("bootstrap", [True, False]),
+		}
+
+		model = RandomForestRegressor(**params, random_state=1, n_jobs=-1)
+		scores = cross_val_score(model, x_train, y_train, scoring='neg_mean_absolute_error', cv=3, n_jobs=-1)
+		return -np.mean(scores)
+
+	study = optuna.create_study(direction="minimize")
+	study.optimize(objective, n_trials=40)
+
+	print("Best MAE (CV):", study.best_value)
+	print("Best params:")
+	for k, v in study.best_params.items():
+		print(f"  {k}: {v}")
+
+	# create RFmodel with best params and fit on full training set
+	RFmodel = RandomForestRegressor(**study.best_params, random_state=1, n_jobs=-1)
 	RFmodel.fit(x_train, y_train)
 
-	# rolling nfore-step prediction
+	# rolling nfore-step prediction using RFmodel
 	xinput = x_train[-1].astype(float).copy()
 	yfore = []
 	for i in range(nfore):
